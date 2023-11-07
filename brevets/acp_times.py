@@ -26,7 +26,33 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
        An arrow object indicating the control open time.
        This will be in the same time zone as the brevet start time.
     """
-    return arrow.now()
+    openTime = arrow.get(brevet_start_time)    
+    cont = control_dist_km
+    if cont > brevet_dist_km and cont <= (brevet_dist_km + (brevet_dist_km*.20)):
+        cont = brevet_dist_km 
+    if cont >= 800 and cont <= 905:
+        openTime = openTime.shift(minutes=+1)
+    if cont > 600 and cont <=1000:
+        hr = (cont-600)//28
+        mn = (((cont-600)/28)-((cont-600)//28))*(60)
+        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        cont = 600
+    if cont > 400 and cont <=600:
+        hr = (cont-400)//30
+        mn = (((cont-400)/30)-((cont-400)//30))*(60)
+        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        cont = 400
+    if cont > 200 and cont <=400:
+        hr = (cont-200)//32
+        mn = (((cont-200)/32)-((cont-200)//32))*(60)
+        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        cont = 200
+    if cont > 0 and cont <=200:
+        hr = cont//34
+        mn = round(((cont/34)-(cont//34))*(60))
+        openTime = openTime.shift(hours=+hr, minutes=+mn)
+
+    return openTime
 
 
 def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
