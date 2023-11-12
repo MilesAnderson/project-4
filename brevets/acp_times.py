@@ -26,33 +26,32 @@ def open_time(control_dist_km, brevet_dist_km, brevet_start_time):
        An arrow object indicating the control open time.
        This will be in the same time zone as the brevet start time.
     """
-    openTime = arrow.get(brevet_start_time)    
-    cont = control_dist_km
-    if cont > brevet_dist_km and cont <= (brevet_dist_km + (brevet_dist_km*.20)):
-        cont = brevet_dist_km 
-    if cont >= 800 and cont <= 905:
-        openTime = openTime.shift(minutes=+1)
+    openTime = arrow.get(brevet_start_time)  
+    time = 0
+
+    if control_dist_km > (brevet_dist_km + (brevet_dist_km*.20)):
+        cont = brevet_dist_km//1
+    elif control_dist_km > brevet_dist_km and control_dist_km <= (brevet_dist_km + (brevet_dist_km*.20)):
+        cont = brevet_dist_km//1
+    else:
+        cont = control_dist_km//1
+
     if cont > 600 and cont <=1000:
-        hr = (cont-600)//28
-        mn = (((cont-600)/28)-((cont-600)//28))*(60)
-        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        time+=(cont-600)/28
         cont = 600
     if cont > 400 and cont <=600:
-        hr = (cont-400)//30
-        mn = (((cont-400)/30)-((cont-400)//30))*(60)
-        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        time+=(cont-400)/30
         cont = 400
     if cont > 200 and cont <=400:
-        hr = (cont-200)//32
-        mn = (((cont-200)/32)-((cont-200)//32))*(60)
-        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        time+=(cont-200)/32
         cont = 200
     if cont > 0 and cont <=200:
-        hr = cont//34
-        mn = round(((cont/34)-(cont//34))*(60))
-        openTime = openTime.shift(hours=+hr, minutes=+mn)
+        time+=cont/34
 
-    return openTime
+    hour = time//1
+    minute = round((time-hour)*60)
+
+    return openTime.shift(hours=+hour, minutes=+minute)
 
 
 def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
@@ -67,4 +66,32 @@ def close_time(control_dist_km, brevet_dist_km, brevet_start_time):
        An arrow object indicating the control close time.
        This will be in the same time zone as the brevet start time.
     """
-    return arrow.now()
+    closeTime = arrow.get(brevet_start_time)
+    time = 0
+
+    if control_dist_km > (brevet_dist_km + (brevet_dist_km*.20)):
+        cont = brevet_dist_km//1
+    elif control_dist_km > brevet_dist_km and control_dist_km <= (brevet_dist_km + (brevet_dist_km*.20)):
+        cont = brevet_dist_km//1
+    else:
+        cont = control_dist_km//1
+
+    if cont > 600 and cont <= 1000:
+        time+=(cont-600)/11.428
+        cont = 600
+    if cont > 60 and cont <= 600:
+        time+=cont/15
+    if cont > 0 and cont <=60:
+        time+=(cont/20)+1
+    if cont == 0:
+        time = 1
+
+    hour = time//1
+    minute = round((time-hour)*60)
+
+    if cont == 200 and brevet_dist_km == 200:
+        minute+=10
+    if cont == 400 and brevet_dist_km == 400:
+        minute+=20
+
+    return closeTime.shift(hours=+hour, minutes=+minute)

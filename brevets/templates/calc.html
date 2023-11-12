@@ -126,13 +126,7 @@
               console.log("Brevets Distance: " + brevkm);
               var close_time_field = control.find("input[name='close']");
               var begin = $("#begin_date").val();
-              console.log("Beginning time: " + begin);
-              
-              if (km > brevkm + brevkm*.20){
-                  var km = control.find("input[name='km']").val(brevkm);
-                  var km = $("#brevet_dist_km").val();
-                  console.log("this is km now: " + km);
-              }              
+              console.log("Beginning time: " + begin);           
 
               $.getJSON(TIME_CALC_URL, {km: km, brevkm: brevkm, begin: begin}).done(
                 function(data) {
